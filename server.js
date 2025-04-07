@@ -22,13 +22,10 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// Health Check
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK',
-    message: 'Server is running',
-    timestamp: new Date().toISOString()
-  });
+// Request Logger Middleware
+app.use((req, res, next) => {
+  console.log(`Incoming: ${req.method} ${req.path}`);
+  next();
 });
 
 // API Routes
@@ -67,11 +64,23 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Test Endpoint
-app.get('/api/users', (req, res) => {
+// Health Endpoints
+app.get('/api/health', (req, res) => {
   res.json({ 
-    message: 'API is working',
-    instructions: 'Send POST request with user data'
+    status: 'OK',
+    message: 'API is healthy',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    message: 'Server is running - use /api endpoints',
+    endpoints: {
+      users: 'POST /api/users',
+      health: 'GET /api/health'
+    }
   });
 });
 
@@ -81,4 +90,4 @@ app.listen(PORT, () => {
   console.log(`Supabase URL: ${process.env.SUPABASE_URL}`);
 });
 
-module.exports = app; // For Vercel compatibility
+module.exports = app;
