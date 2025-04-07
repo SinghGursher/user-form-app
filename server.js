@@ -1,20 +1,21 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path'); // Add this line
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS Configuration
+// Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST']
 }));
-
-// Middleware
 app.use(express.json());
+
+// Serve static files from public folder
+app.use(express.static(path.join(__dirname, 'public'))); // Add this line
 
 // Supabase Client
 const supabase = createClient(
@@ -22,23 +23,15 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// Request Logger Middleware
-app.use((req, res, next) => {
-  console.log(`Incoming: ${req.method} ${req.path}`);
-  next();
-});
-
 // API Routes
 app.post('/api/users', async (req, res) => {
   try {
-    // Validate request body
     if (!req.body || !req.body.name || !req.body.email) {
       return res.status(400).json({ 
         error: 'Name and email are required' 
       });
     }
 
-    // Insert into Supabase
     const { data, error } = await supabase
       .from('users')
       .insert([{
@@ -49,8 +42,6 @@ app.post('/api/users', async (req, res) => {
       .select();
 
     if (error) throw error;
-
-    // Return created record
     res.status(201).json({
       success: true,
       data: data[0]
@@ -64,28 +55,14 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Health Endpoints
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK',
-    message: 'API is healthy',
-    timestamp: new Date().toISOString()
-  });
+// Handle all other routes by serving index.html
+app.get('*', (req, res) => { // Add this block
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-app.get('/', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json({
-      status: 'OK',
-      message: 'This is the Express server root',
-      instructions: 'Use POST /api/users to submit data'
-    });
-  });
 
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Supabase URL: ${process.env.SUPABASE_URL}`);
 });
 
 module.exports = app;
