@@ -4,5 +4,6 @@ class User {
     this.email = email; 
     this.phone = phone; 
     } 
-    } 
-    module.exports = User; 
+} 
+
+module.exports = User; 
