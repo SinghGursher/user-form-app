@@ -22,17 +22,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.post('/api/users', async (req, res) => {
+    console.log("POST /api/users received"); // Debug log
     try {
-        const { name, email, phone } = req.body;
-        const user = new User(name, email, phone);
-
-        const id = await userDao.save(user);
-        res.status(201).json({ id, message: 'User saved successfully' });
+      const { data, error } = await supabase
+        .from('users')
+        .insert([req.body])
+        .select();
+      
+      if (error) throw error;
+      res.status(201).json(data[0]);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message || 'Error saving user' });
+      console.error("Error:", err);
+      res.status(500).json({ error: err.message });
     }
-});
+  });
+  
+  // Add a test GET route for debugging
+  app.get('/api/users', (req, res) => {
+    res.send("API is working");
+  });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
