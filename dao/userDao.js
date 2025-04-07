@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 class UserDAO {
     async save(user) {
         const SUPABASE_URL = 'https://vduejueqummqjysbzqvf.supabase.co';
-        const SUPABASE_KEY = 'your_service_role_secret'; // Set the key appropriately
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkdWVqdWVxdW1tcWp5c2J6cXZmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDA0Mzk1NywiZXhwIjoyMDU5NjE5OTU3fQ.4EuxoyJziD8jdJS3a5wFploseB5MO2ZAA00GG2BlPKo'; // Set the key appropriately
 
         const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
             method: 'POST',
