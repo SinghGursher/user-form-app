@@ -1,21 +1,23 @@
 const express = require('express');
 const path = require('path');
-const User = require('./models/user');
-const createUserDao = require('./dao/userDao'); // Import the factory function
+const cors = require('cors');
+const User = require('./user');
+const createUserDao = require('./dao/userDao');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
-require('dotenv').config(); // Load environment variables
+require('dotenv').config();
 
-// Initialize the Supabase client
+// Initialize Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey); // Create Supabase client
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const userDao = createUserDao(supabase); // Create UserDAO instance with Supabase client
+const userDao = createUserDao(supabase);
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
@@ -24,12 +26,11 @@ app.post('/api/users', async (req, res) => {
         const { name, email, phone } = req.body;
         const user = new User(name, email, phone);
 
-        const id = await userDao.save(user); // Save user and get the ID
-        
-        res.status(201).send(`User saved with ID: ${id}`);
+        const id = await userDao.save(user);
+        res.status(201).json({ id, message: 'User saved successfully' });
     } catch (err) {
         console.error(err);
-        res.status(500).send(err.message || 'Error saving user');
+        res.status(500).json({ error: err.message || 'Error saving user' });
     }
 });
 

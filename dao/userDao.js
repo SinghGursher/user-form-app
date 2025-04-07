@@ -7,25 +7,25 @@ class UserDAO {
         const { data, error } = await this.supabase
             .from('users')
             .insert([
-                { // Insert only the fields that are necessary
+                { 
                     name: user.name,
                     email: user.email,
                     phone: user.phone
-                    // Do NOT include user.id
                 }
-            ]);
-
+            ])
+            .select(); // Add this to return the inserted data
+    
         console.log(`Insert response:`, data, error);
-
+    
         if (error) {
             console.error('Error saving user:', error);
             throw new Error(`Failed to save user: ${error.message}`);
         }
-
+    
         if (data && data.length > 0) {
-            return data[0].id; // Return the generated ID
+            return data[0].id;
         }
-
+    
         throw new Error('User created but no ID returned');
     }
 }
