@@ -1,25 +1,16 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
-const User = require('./user');
-const createUserDao = require('./dao/userDao');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-require('dotenv').config();
-
-// Initialize Supabase
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-const userDao = createUserDao(supabase);
-
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+// Initialize Supabase with Service Role
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY // Service Role Key
+);
 
 app.post('/api/users', async (req, res) => {
     console.log("POST /api/users received"); // Debug log
@@ -42,6 +33,4 @@ app.post('/api/users', async (req, res) => {
     res.send("API is working");
   });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(process.env.PORT || 3000);
