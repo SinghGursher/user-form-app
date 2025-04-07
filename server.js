@@ -74,15 +74,13 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.json({ 
-    status: 'OK',
-    message: 'Server is running - use /api endpoints',
-    endpoints: {
-      users: 'POST /api/users',
-      health: 'GET /api/health'
-    }
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      status: 'OK',
+      message: 'This is the Express server root',
+      instructions: 'Use POST /api/users to submit data'
+    });
   });
-});
 
 // Start Server
 app.listen(PORT, () => {
