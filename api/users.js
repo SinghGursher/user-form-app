@@ -1,19 +1,35 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
 export default async function handler(req, res) {
-    if (req.method === 'POST') {
-      try {
-        const { name, email, phone } = req.body;
-  
-        // Log data to verify
-        console.log({ name, email, phone });
-  
-        // Normally, you would insert the data into a database here.
-        res.status(200).json({ data: { id: 'generated-user-id' } });
-      } catch (error) {
-        console.error('Error handling the request:', error);
-        res.status(500).json({ error: 'Server error' });
+  if (req.method === 'POST') {
+    try {
+      const { name, email, phone } = req.body;
+
+      // Log the received data (you can remove this once everything works)
+      console.log({ name, email, phone });
+
+      // Insert the data into Supabase (or another database)
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{ name, email, phone }])
+        .select();
+
+      if (error) {
+        throw error;
       }
-    } else {
-      res.status(405).json({ error: 'Method Not Allowed' });
+
+      // Return a success response
+      res.status(200).json({ data: data[0] });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Server error' });
     }
+  } else {
+    res.status(405).json({ error: 'Method Not Allowed' });
   }
-  
+}
