@@ -20,35 +20,43 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// API Endpoint
 app.post('/api/users', async (req, res) => {
   try {
-    console.log('Received data:', req.body); // Debug log
+    // Always set Content-Type header
+    res.setHeader('Content-Type', 'application/json');
     
     const { data, error } = await supabase
       .from('users')
       .insert([req.body])
       .select();
 
-    if (error) {
-      console.error('Supabase error:', error);
-      return res.status(400).json({ error: error.message });
-    }
-
+    if (error) throw error;
+    
     res.status(201).json({
       success: true,
       data: data[0]
     });
     
   } catch (err) {
-    console.error('Server error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('API Error:', err);
+    res.status(500).json({ 
+      error: 'Internal Server Error',
+      details: err.message 
+    });
   }
 });
 
 // Handle all other routes
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
+});
+// Error handling middleware (add this AFTER your routes)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: err.message 
+  });
 });
 
 module.exports = app;

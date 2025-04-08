@@ -27,6 +27,13 @@
               body: JSON.stringify(data),
             });
         
+            // First check if response is JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              const text = await res.text();
+              throw new Error(`Server returned: ${text}`);
+            }
+        
             const result = await res.json();
             
             if (res.ok) {
