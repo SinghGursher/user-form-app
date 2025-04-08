@@ -3,15 +3,12 @@
 export default async function handler(req, res) {
     if (req.method === 'POST') {
       try {
-        // Extract the data from the request body
         const { name, email, phone } = req.body;
   
-        // You can log the received data to verify it's correct
+        // Log data to verify
         console.log({ name, email, phone });
   
-        // Normally, you would save the data to a database here.
-        // For now, just return a success response.
-        
+        // Normally, you would insert the data into Supabase or another DB here
         res.status(200).json({ data: { id: 'generated-user-id' } });
       } catch (error) {
         console.error('Error handling the request:', error);
