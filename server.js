@@ -17,10 +17,22 @@ app.use(express.json());
 app.use(express.static('public')); // Serve static files
 
 // Supabase Client
+// In server.js, modify the Supabase client initialization:
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: false // Important for serverless
+    }
+  }
 );
+
+// Add this right after supabase initialization:
+console.log('Supabase initialized:', {
+  url: process.env.SUPABASE_URL,
+  key: process.env.SUPABASE_KEY ? '***REDACTED***' : 'MISSING'
+});
 console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
 console.log("SUPABASE_KEY exists:", !!process.env.SUPABASE_KEY);
 
