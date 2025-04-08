@@ -26,32 +26,31 @@ console.log("SUPABASE_KEY exists:", !!process.env.SUPABASE_KEY);
 
 
 app.post('/api/users', async (req, res) => {
-  console.log("Incoming data:", req.body);
   try {
-    // Always set Content-Type header
     res.setHeader('Content-Type', 'application/json');
-    
+
     const { data, error } = await supabase
       .from('users')
       .insert([req.body])
       .select();
 
     if (error) throw error;
-    
+
     res.status(201).json({
       success: true,
       data: data[0]
     });
-    
+
   } catch (err) {
-    console.error('API Error:', err);
-    res.status(500).json({ 
+    console.error('API Error:', err.message);
+    console.error("Full error:", err); // ✅ Add this line here
+    res.status(500).json({
       error: 'Internal Server Error',
-      details: err.message 
-      
+      details: err.message
     });
   }
 });
+
 
 // Handle all other routes
 app.get('*', (req, res) => {
