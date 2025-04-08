@@ -1,21 +1,18 @@
-require('dotenv').config();
 const express = require('express');
-const path = require('path'); // Add this line
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Enhanced CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  methods: ['GET', 'POST']
+  origin: '*', // Allow all origins for now
+  methods: ['POST', 'GET'],
+  allowedHeaders: ['Content-Type']
 }));
-app.use(express.json());
 
-// Serve static files from public folder
-app.use(express.static(path.join(__dirname, 'public'))); // Add this line
+app.use(express.json());
+app.use(express.static('public')); // Serve static files
 
 // Supabase Client
 const supabase = createClient(
@@ -23,46 +20,35 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// API Routes
+// API Endpoint
 app.post('/api/users', async (req, res) => {
   try {
-    if (!req.body || !req.body.name || !req.body.email) {
-      return res.status(400).json({ 
-        error: 'Name and email are required' 
-      });
-    }
-
+    console.log('Received data:', req.body); // Debug log
+    
     const { data, error } = await supabase
       .from('users')
-      .insert([{
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone || null
-      }])
+      .insert([req.body])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({ error: error.message });
+    }
+
     res.status(201).json({
       success: true,
       data: data[0]
     });
-
+    
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).json({ 
-      error: err.message || 'Internal server error' 
-    });
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Handle all other routes by serving index.html
-app.get('*', (req, res) => { // Add this block
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Handle all other routes
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 module.exports = app;

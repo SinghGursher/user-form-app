@@ -6,20 +6,41 @@
     </form> 
     <p id="response"></p> 
 
-    <script> 
-    document.getElementById('userForm').addEventListener('submit', async (e) => { 
-    e.preventDefault(); 
-    const data = { 
-    name: document.getElementById('name').value, 
-    email: document.getElementById('email').value, 
-    phone: document.getElementById('phone').value, 
-    }; 
-    const res = await fetch('/api/users', { 
-    method: 'POST', 
-    headers: { 'Content-Type': 'application/json' }, 
-    body: JSON.stringify(data), 
-    }); 
-    document.getElementById('response').innerText = await res.text(); 
-    }); 
-    </script> 
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const responseEl = document.getElementById('response');
+          responseEl.innerText = "Submitting...";
+          responseEl.style.color = "black";
+        
+          try {
+            const data = {
+              name: document.getElementById('name').value,
+              email: document.getElementById('email').value,
+              phone: document.getElementById('phone').value,
+            };
+        
+            const res = await fetch('/api/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+        
+            const result = await res.json();
+            
+            if (res.ok) {
+              responseEl.innerText = `Success! User ID: ${result.data.id}`;
+              responseEl.style.color = "green";
+              document.getElementById('userForm').reset();
+            } else {
+              throw new Error(result.error || 'Failed to submit');
+            }
+          } catch (err) {
+            responseEl.innerText = `Error: ${err.message}`;
+            responseEl.style.color = "red";
+            console.error('Submission error:', err);
+          }
+        });
+        </script>
     
