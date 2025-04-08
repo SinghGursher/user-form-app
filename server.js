@@ -21,8 +21,12 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
+console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+console.log("SUPABASE_KEY exists:", !!process.env.SUPABASE_KEY);
+
 
 app.post('/api/users', async (req, res) => {
+  console.log("Incoming data:", req.body);
   try {
     // Always set Content-Type header
     res.setHeader('Content-Type', 'application/json');
@@ -44,6 +48,7 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ 
       error: 'Internal Server Error',
       details: err.message 
+      
     });
   }
 });
