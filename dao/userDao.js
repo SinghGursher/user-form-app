@@ -13,7 +13,7 @@ class UserDAO {
                     phone: user.phone
                 }
             ])
-            .select(); // Add this to return the inserted data
+            .select(); 
     
         console.log(`Insert response:`, data, error);
     
@@ -30,4 +30,4 @@ class UserDAO {
     }
 }
 
-module.exports = (supabase) => new UserDAO(supabase); // Export a function that takes the supabase instance
+module.exports = (supabase) => new UserDAO(supabase); 

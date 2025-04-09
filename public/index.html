@@ -1,59 +1,4 @@
-<!--<form id="userForm"> 
-    <input type="text" id="name" placeholder="Name" required /> 
-    <input type="email" id="email" placeholder="Email" required /> 
-    <input type="text" id="phone" placeholder="Phone" required /> 
-    <button type="submit">Submit</button> 
-    <button id="fetchUsers">Show Users</button>
-<ul id="userList"></ul>
-
-  </form> 
-  <p id="response"></p> 
-  
-  <script>
-      document.getElementById('userForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const responseEl = document.getElementById('response');
-        responseEl.innerText = "Submitting...";
-        responseEl.style.color = "black";
-      
-        try {
-          const data = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-          };
-      
-          const res = await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-          });
-      
-          const contentType = res.headers.get('content-type');
-          if (!contentType || !contentType.includes('application/json')) {
-            const text = await res.text();
-            throw new Error(`Server returned: ${text}`);
-          }
-      
-          const result = await res.json();
-          
-          if (res.ok) {
-            responseEl.innerText = `Success! User ID: ${result.data.id}`;
-            responseEl.style.color = "green";
-            document.getElementById('userForm').reset();
-          } else {
-            throw new Error(result.error || 'Failed to submit');
-          }
-        } catch (err) {
-          responseEl.innerText = `Error: ${err.message}`;
-          responseEl.style.color = "red";
-          console.error('Submission error:', err);
-        }
-      });
-  </script> -->
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -75,7 +20,6 @@
   <ul id="userList"></ul>
 
   <script>
-    // Submit Form
     document.getElementById('userForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -118,7 +62,6 @@
       }
     });
 
-    // Fetch and Show Users
     document.getElementById('fetchUsers').addEventListener('click', async () => {
       const listEl = document.getElementById('userList');
       listEl.innerHTML = "Loading...";
